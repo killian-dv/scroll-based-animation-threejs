@@ -7,11 +7,12 @@ import * as THREE from "three";
 const gui = new GUI();
 
 const parameters = {
-  materialColor: "#ffeded",
+  materialColor: "#8fb4ff",
 };
 
 gui.addColor(parameters, "materialColor").onChange(() => {
   material.color.set(parameters.materialColor);
+  particlesMaterial.color.set(parameters.materialColor);
 });
 
 /**
@@ -60,6 +61,36 @@ mesh3.position.x = 2;
 scene.add(mesh1, mesh2, mesh3);
 
 const sectionMeshes = [mesh1, mesh2, mesh3];
+
+/**
+ * Particles
+ */
+
+const particlesCount = 500;
+const positions = new Float32Array(particlesCount * 3);
+
+for (let i = 0; i < particlesCount; i++) {
+  positions[i * 3] = (Math.random() - 0.5) * 10;
+  positions[i * 3 + 1] =
+    objectsDistance * 0.5 -
+    Math.random() * objectsDistance * sectionMeshes.length;
+  positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
+}
+
+const particlesGeometry = new THREE.BufferGeometry();
+particlesGeometry.setAttribute(
+  "position",
+  new THREE.BufferAttribute(positions, 3)
+);
+
+const particlesMaterial = new THREE.PointsMaterial({
+  color: parameters.materialColor,
+  size: 0.03,
+  sizeAttenuation: true,
+});
+
+const particlesSystem = new THREE.Points(particlesGeometry, particlesMaterial);
+scene.add(particlesSystem);
 
 /**
  * Lights
